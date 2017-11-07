@@ -19,11 +19,11 @@ sre::Camera &SideScrollingCamera::getCamera() {
 
 void SideScrollingCamera::update(float deltaTime) {
     auto position = followObject->getPosition();
-
+	
     position.x += offset.x;
-    position.y = offset.y;
+    
 
-    gameObject->setPosition(position);
+	gameObject->setPosition(position);
     vec3 eye (position, 0);
     vec3 at (position, -1);
     vec3 up (0, 1, 0);

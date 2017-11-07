@@ -53,7 +53,7 @@ void BirdGame::init() {
 
     auto birdObj = createGameObject();
     birdObj->name = "Bird";
-    camera->setFollowObject(birdObj, {+150,BirdGame::windowSize.y/2});
+    camera->setFollowObject(birdObj, birdObj->getPosition());
     auto so = birdObj->addComponent<SpriteComponent>();
     auto sprite = spriteAtlas->get("bird1.png");
     sprite.setScale({2,2});
