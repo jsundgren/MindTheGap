@@ -11,6 +11,7 @@
 
 using namespace std;
 using namespace sre;
+using namespace glm;
 
 #pragma region Static Initialization
 const glm::vec2 BirdGame::windowSize(800,1000);
@@ -44,35 +45,59 @@ void BirdGame::init() {
     sceneObjects.clear();
     physicsComponentLookup.clear();
     initPhysics();
+
+	//CAMERA
     auto camObj = createGameObject();
     camObj->name = "Camera";
     camera = camObj->addComponent<SideScrollingCamera>();
-    camObj->setPosition(windowSize*0.5f);
+    camObj->setPosition(vec2(0));
 
+	//BIRD
     spriteAtlas = SpriteAtlas::create("bird.json","bird.png");
 
     auto birdObj = createGameObject();
     birdObj->name = "Bird";
-    camera->setFollowObject(birdObj, birdObj->getPosition());
+    camera->setFollowObject(birdObj, vec2(0));
     auto so = birdObj->addComponent<SpriteComponent>();
     auto sprite = spriteAtlas->get("bird1.png");
     sprite.setScale({2,2});
 
-    birdObj->setPosition({-100,300});
+	birdObj->setPosition(vec2(0, 300));
     so->setSprite(sprite);
-    auto anim = birdObj->addComponent<SpriteAnimationComponent>();
+    //auto anim = birdObj->addComponent<SpriteAnimationComponent>();
     auto phys = birdObj->addComponent<PhysicsComponent>();
-    phys->initCircle(b2_dynamicBody, 10/physicsScale, {birdObj->getPosition().x/physicsScale,birdObj->getPosition().y/physicsScale}, 1);
+	phys->initBox(b2_dynamicBody, vec2(10, 20) / physicsScale, { birdObj->getPosition().x / physicsScale,birdObj->getPosition().y / physicsScale }, 1);
     auto birdC = birdObj->addComponent<BirdController>();
 
-    vector<Sprite> spriteAnim({spriteAtlas->get("bird1.png"),spriteAtlas->get("bird2.png"),spriteAtlas->get("bird3.png"),spriteAtlas->get("bird2.png")});
+    /*vector<Sprite> spriteAnim({spriteAtlas->get("bird1.png"),spriteAtlas->get("bird2.png"),spriteAtlas->get("bird3.png"),spriteAtlas->get("bird2.png")});
     for(auto & s : spriteAnim){
         s.setScale({2,2});
     }
-    anim-> setSprites(spriteAnim);
+    anim-> setSprites(spriteAnim);*/
+
+	//+++++++++++++++++++++ SCENE - BUILDUP ++++++++++++++++++++++++//
+
+	//TEST FLOOR SECTION
+	world->SetDebugDraw(&debugDraw);
+	/*auto spriteBottom = spriteAtlas->get("column_bottom.png");
+	spriteBottom.setScale({ 2,2 });*/
+
+	auto obj = createGameObject();
+	obj->name = "Bottom Floor";
+	obj->tag = Tag::Ground;
+	//auto spriteComp = obj->addComponent<SpriteComponent>();
+
+	glm::vec2 pos{ 0 , 0};
+	obj->setPosition(pos);
+	//spriteComp->setSprite(spriteBottom);
+
+	vec2 s = vec2( 500,  50);
+
+	auto physComp = obj->addComponent<PhysicsComponent>();
+	physComp->initBox(b2_staticBody, s / physicsScale, pos / physicsScale, 1.0f);
 
 
-	// BOTTOM
+	/*// BOTTOM
     auto spriteBottom = spriteAtlas->get("column_bottom.png");
     spriteBottom.setScale({2,2});
     float curve = 250;
@@ -138,10 +163,11 @@ void BirdGame::init() {
 		cout << "spawned coint at: " << pos.x << ", " << pos.y << endl;
 	}
 
+	
 
-
-    background1Component.init("background.png");
     background2Component.init("background2.png");
+    background1Component.init("background.png");*/
+	
 }
 void BirdGame::update(float time) {
     if (gameState == GameState::Running){
