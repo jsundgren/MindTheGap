@@ -19,9 +19,11 @@ sre::Camera &SideScrollingCamera::getCamera() {
 
 void SideScrollingCamera::update(float deltaTime) {
     auto position = followObject->getPosition();
-	
-    position.x += offset.x;
-    
+	float smoothSpeed = 0.125f;
+
+	glm::vec2 desPosition = position + offset;
+	glm::vec2 smoothPos = glm::mix(gameObject->getPosition() , desPosition, smoothSpeed);
+	position = smoothPos;
 
 	gameObject->setPosition(position);
     vec3 eye (position, 0);
