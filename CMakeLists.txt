@@ -90,6 +90,10 @@ ELSE (APPLE)
     ENDIF(UNIX)
 ENDIF (APPLE)
 
+
+### tmxlite ###
+SET(TMXLITE_LIBRARY ${CMAKE_SOURCE_DIR}/MindTheGap/tmxlite-s-d.lib)
+
 #### Sol #####
 INCLUDE_DIRECTORIES (thirdparty/Sol/include)
 
@@ -111,5 +115,6 @@ ENDIF(WIN32)
 # build targets using sre
 add_subdirectory(examples)
 add_subdirectory(Ex8_Bird)
+add_subdirectory(Ex10_Platformer)
 add_subdirectory(MindTheGap)
 add_subdirectory(project)

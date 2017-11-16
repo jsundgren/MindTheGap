@@ -18,7 +18,7 @@ file(GLOB MindTheGap
 
 # Compile cpp files (from Snake variable)
 add_executable(MindTheGap ${MindTheGap})
-target_link_libraries(MindTheGap ${all_libs})
+target_link_libraries(MindTheGap ${all_libs} ${TMXLITE_LIBRARY})
 
 # copy files to dest
 file(COPY background.png background2.png bird.json bird.png DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
