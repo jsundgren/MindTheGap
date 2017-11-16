@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Component.hpp"
+#include "PhysicsComponent.hpp"
 
 using namespace std;
 
@@ -16,18 +17,23 @@ public:
 
 	void update(float deltaTime) override;
 
+	bool onGround = false;
+
 private:
 	static float gravityFactor;
+	static float density;
 	static float damping;
-	static float movementSpeed;
-	static float airMovementFactor;
+	static float acceleration;
+	static float airAcceleration;
+	static float maximumVelocity;
 	static float jumpForce;
 	static float jumpTimer;
+	static float jumpTimerWait;
+	static float jumpTimerForce;
 
 	bool left = false;
 	bool right = false;
 	bool space = false;
-	bool onGround = false;
 
 	shared_ptr<PhysicsComponent> phys;
 	

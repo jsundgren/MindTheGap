@@ -9,6 +9,9 @@
 
 class PhysicsComponent;
 
+using namespace glm;
+
+
 enum class GameState{
     Ready,
     Running,
@@ -32,15 +35,17 @@ public:
 		static const glm::vec2 windowSize;
 
 		void setGameState(GameState newState);
-		std::shared_ptr<GameObject> createGameObject();
+		std::shared_ptr<GameObject> createGameObject(std::string name, Tag tag, vec2 position);
 	#pragma endregion
 
 private:
+
 
 	#pragma region GameManager Fields
 		GameState gameState = GameState::Ready;
 		void init();
 		void update(float time);
+		void generateSquarePlatform(vec2 pos, vec2 size);
 
 		std::vector<std::shared_ptr<GameObject>> sceneObjects;
 		BackgroundComponent background1Component;
@@ -72,7 +77,8 @@ private:
 		void render();
 
 		std::shared_ptr<SideScrollingCamera> camera;
-		std::shared_ptr<sre::SpriteAtlas> spriteAtlas;
+		std::shared_ptr<sre::SpriteAtlas> playerSpriteAtlas;
+		std::shared_ptr<sre::SpriteAtlas> platformSpriteAtlas;
 	#pragma endregion
 
     friend class PhysicsComponent;

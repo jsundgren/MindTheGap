@@ -7,7 +7,7 @@
 // Forward declaration
 class Component;
 
-enum Tag {Ground, Default};
+enum Tag {Ground, Player, Camera, Trigger, Default};
 
 // GameObject are empty container objects, which contains Components
 class GameObject {

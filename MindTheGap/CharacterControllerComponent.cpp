@@ -10,17 +10,22 @@
 #include "PhysicsComponent.hpp"
 #include "BirdGame.hpp"
 #include "SpriteComponent.hpp"
+#include "Box2D\Box2D.h"
 #include <time.h>
 
 using namespace glm;
 
 #pragma region Static Initialization
-float BirdController::gravityFactor = 6.0f;
-float BirdController::damping = 3.0f;
-float BirdController::movementSpeed = 50.0f;
-float BirdController::airMovementFactor = 0.8f;
-float BirdController::jumpForce = 0.2f;
-float BirdController::jumpTimer = 0.5f;
+float BirdController::gravityFactor = 4.0f;
+float BirdController::density = 0.5f;
+float BirdController::damping = 1.0f;
+float BirdController::acceleration = 3.0f;
+float BirdController::airAcceleration = 3.0f;
+float BirdController::maximumVelocity = 7.0f;
+float BirdController::jumpForce = 1.5f;
+float BirdController::jumpTimer = 0.25f;
+float BirdController::jumpTimerWait = 0.05f;
+float BirdController::jumpTimerForce = 0.05f;
 #pragma endregion
 
 BirdController::BirdController(GameObject *gameObject) : Component(gameObject) {
@@ -28,7 +33,9 @@ BirdController::BirdController(GameObject *gameObject) : Component(gameObject) {
 	phys->body->SetFixedRotation(true);
 	phys->body->SetLinearDamping(damping);
 	phys->body->SetGravityScale(gravityFactor);
-
+	phys->body->GetFixtureList()->SetDensity(density);
+	phys->body->ResetMassData();
+	cout << "Density: " << phys->body->GetFixtureList()->GetDensity() << " results in mass: " << phys->body->GetMass() << endl;
 
 }
 
@@ -40,25 +47,22 @@ void BirdController::update(float deltaTime) {
 
 bool BirdController::onKey(SDL_Event &event) {
 
-	if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_LEFT) {
-		left = true;
+	switch (event.key.keysym.sym) {
+	case SDLK_SPACE:
+	{
+		space = event.type == SDL_KEYDOWN;;
 	}
-	if (event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_LEFT) {
-		left = false;
+	break;
+	case SDLK_LEFT:
+	{
+		left = event.type == SDL_KEYDOWN;
 	}
-
-	if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RIGHT) {
-		right = true;
+	break;
+	case SDLK_RIGHT:
+	{
+		right = event.type == SDL_KEYDOWN;
 	}
-	if (event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_RIGHT) {
-		right = false;
-	}
-
-	if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_SPACE) {
-		space = true;
-	}
-	if (event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_SPACE) {
-		space = false;
+	break;
 	}
 
 	return false;
@@ -66,31 +70,21 @@ bool BirdController::onKey(SDL_Event &event) {
 
 void BirdController::movement(float deltaTime) {
 
-	vec2 velocity = vec2(0);//phys->getLinearVelocity();
+	//Movement
+	vec2 movement = vec2(0);
+	float currentAcceleration = onGround ? acceleration : airAcceleration;
 
-	vec2 leftVec = vec2(0);
-	vec2 rightVec = vec2(0);
+	if (left) { movement.x--; }
+	if (right) { movement.x++; }
+	phys->addImpulse(movement * currentAcceleration * deltaTime);
 
-	float speed = movementSpeed;
-
-	if (!onGround) {
-		speed *= airMovementFactor;
+	//Clamp Movement
+	vec2 velocity = phys->getLinearVelocity();
+	if (abs(velocity.x) > maximumVelocity) {
+		velocity.x = sign(velocity.x) * maximumVelocity;
+		phys->setLinearVelocity(velocity);
 	}
 
-	if (left) {
-		leftVec = vec2(-speed, 0);
-		leftVec *= deltaTime;
-	}
-	if (right) {
-		rightVec = vec2(speed, 0);
-		rightVec *= deltaTime;
-	}
-
-	velocity = velocity + leftVec + rightVec;
-
-	phys->addForce(velocity);
-
-	//phys->setLinearVelocity(velocity);
 
 	//std::cout << "x: " << gameObject->getPosition().x << "y: " << gameObject->getPosition().y << std::endl;
 	//std::cout << "left: " << left << "right: " << right << std::endl;
@@ -103,10 +97,13 @@ void BirdController::jump(float deltaTime) {
 
 	if (space && onGround) {
 		timer = 0;
+		phys->addImpulse(vec2(0, jumpForce));
+		onGround = false;
 	}
 
-	if (space && timer < jumpTimer) {
-		phys->addImpulse(vec2(0, jumpForce));
+	if (space && timer > jumpTimerWait && timer < jumpTimer) {
+		phys->addImpulse(vec2(0, jumpTimerForce));
+		cout << "tick";
 	}
 }
 

@@ -5,16 +5,20 @@
 #include "SpriteAnimationComponent.hpp"
 #include "Box2D/Dynamics/Contacts/b2Contact.h"
 #include "PhysicsComponent.hpp"
-#include "BirdController.hpp"
+#include "CharacterControllerComponent.hpp"
+#include "rapidjson/rapidjson.h"
+#include "rapidjson/document.h"
+#include "rapidjson/istreamwrapper.h"
 
 #include <iostream>
 
 using namespace std;
 using namespace sre;
 using namespace glm;
+using namespace rapidjson;
 
 #pragma region Static Initialization
-const glm::vec2 BirdGame::windowSize(800,1000);
+const glm::vec2 BirdGame::windowSize(1280, 720);
 BirdGame* BirdGame::instance = nullptr;
 #pragma endregion
 
@@ -46,56 +50,63 @@ void BirdGame::init() {
     physicsComponentLookup.clear();
     initPhysics();
 
+	//Player
+    auto playerObj = createGameObject("Player", Tag::Player, vec2(0, 300));
+
+	auto playerSpriteComp = playerObj->addComponent<SpriteComponent>();
+    playerSpriteAtlas = SpriteAtlas::create("OPP_Sheet.json","OPP_Sheet.png");
+    auto sprite = playerSpriteAtlas->get("OPP_Idle (1).png");
+    //sprite.setScale({2,2});
+    playerSpriteComp->setSprite(sprite);
+    auto anim = playerObj->addComponent<SpriteAnimationComponent>();
+	anim->setPlayerSprites(playerSpriteAtlas);
+
+    auto phys = playerObj->addComponent<PhysicsComponent>();
+	phys->initBox(b2_dynamicBody, vec2(20, 30) / physicsScale, { playerObj->getPosition().x / physicsScale,playerObj->getPosition().y / physicsScale }, 1);
+	auto birdC = playerObj->addComponent<BirdController>();
+
 	//CAMERA
-    auto camObj = createGameObject();
-    camObj->name = "Camera";
+    auto camObj = createGameObject("Camera", Tag::Camera, vec2(0));
     camera = camObj->addComponent<SideScrollingCamera>();
-    camObj->setPosition(vec2(0));
+    camera->setFollowObject(playerObj, vec2(0));
 
-	//BIRD
-    spriteAtlas = SpriteAtlas::create("bird.json","bird.png");
-
-    auto birdObj = createGameObject();
-    birdObj->name = "Bird";
-    camera->setFollowObject(birdObj, vec2(0));
-    auto so = birdObj->addComponent<SpriteComponent>();
-    auto sprite = spriteAtlas->get("bird1.png");
-    sprite.setScale({2,2});
-
-	birdObj->setPosition(vec2(0, 300));
-    so->setSprite(sprite);
-    //auto anim = birdObj->addComponent<SpriteAnimationComponent>();
-    auto phys = birdObj->addComponent<PhysicsComponent>();
-	phys->initBox(b2_dynamicBody, vec2(10, 20) / physicsScale, { birdObj->getPosition().x / physicsScale,birdObj->getPosition().y / physicsScale }, 1);
-    auto birdC = birdObj->addComponent<BirdController>();
-
-    /*vector<Sprite> spriteAnim({spriteAtlas->get("bird1.png"),spriteAtlas->get("bird2.png"),spriteAtlas->get("bird3.png"),spriteAtlas->get("bird2.png")});
-    for(auto & s : spriteAnim){
-        s.setScale({2,2});
-    }
-    anim-> setSprites(spriteAnim);*/
 
 	//+++++++++++++++++++++ SCENE - BUILDUP ++++++++++++++++++++++++//
 
+	//TEST MAP SQUARED SECTION
+
+	vec2 pos = vec2(0);
+	vec2 size = vec2(160, 160);
+
+	auto platformObj = createGameObject("Platform", Tag::Ground, vec2(0, 0));
+
+	auto platformSpriteComp = platformObj->addComponent<SpriteComponent>();
+	platformSpriteAtlas = SpriteAtlas::create("test_map_squared_spritesheet.json", "test_map_squared_spritesheet.png");
+	platformSpriteComp->setSprite(platformSpriteAtlas->get("test_map_squared.png"));
+
+	auto physComp = platformObj->addComponent<PhysicsComponent>();
+	physComp->initBox(b2_staticBody, size / physicsScale, pos / physicsScale, 1.0f);
+
+	auto triggerObj = createGameObject("Trigger", Tag::Trigger, vec2(0, 0));
+	pos = vec2(0, 320);
+	size = vec2(160, 160);
+	physComp = triggerObj->addComponent<PhysicsComponent>();
+	physComp->initBox(b2_staticBody, size / physicsScale, pos / physicsScale, 1.0f);
+	physComp->fixture->SetSensor(true);
+
+	//generateSquarePlatform(pos, size);
+
 	//TEST FLOOR SECTION
-	world->SetDebugDraw(&debugDraw);
 	/*auto spriteBottom = spriteAtlas->get("column_bottom.png");
-	spriteBottom.setScale({ 2,2 });*/
+	spriteBottom.setScale({ 2,2 });
 
-	auto obj = createGameObject();
-	obj->name = "Bottom Floor";
-	obj->tag = Tag::Ground;
-	//auto spriteComp = obj->addComponent<SpriteComponent>();
-
-	glm::vec2 pos{ 0 , 0};
-	obj->setPosition(pos);
-	//spriteComp->setSprite(spriteBottom);
-
-	vec2 s = vec2( 500,  50);
+	vec2 pos = vec2(0);
+	vec2 size = vec2( 500,  50);
+	auto obj = createGameObject("Bottom Floor", Tag::Ground, pos);
 
 	auto physComp = obj->addComponent<PhysicsComponent>();
-	physComp->initBox(b2_staticBody, s / physicsScale, pos / physicsScale, 1.0f);
-
+	physComp->initBox(b2_staticBody, size / physicsScale, pos / physicsScale, 1.0f);
+	*/
 
 	/*// BOTTOM
     auto spriteBottom = spriteAtlas->get("column_bottom.png");
@@ -169,6 +180,31 @@ void BirdGame::init() {
     background1Component.init("background.png");*/
 	
 }
+
+void BirdGame::generateSquarePlatform(vec2 pos, vec2 size) {
+	auto platformObj = createGameObject("Platform", Tag::Ground, vec2(0, 0));
+
+	auto platformSpriteComp = platformObj->addComponent<SpriteComponent>();
+	platformSpriteAtlas = SpriteAtlas::create("test_map_squared_spritesheet.json", "test_map_squared_spritesheet.png");
+	platformSpriteComp->setSprite(platformSpriteAtlas->get("test_map_squared.png"));
+
+	auto physComp = platformObj->addComponent<PhysicsComponent>();
+	physComp->initBox(b2_staticBody, size / physicsScale, pos / physicsScale, 1.0f);
+
+	for (int i = 0; i < 8; i++) {
+
+	}
+
+	auto triggerObj = createGameObject("Trigger", Tag::Trigger, vec2(0, 0));
+	pos = vec2(0, 320);
+	size = vec2(160, 160);
+	physComp = triggerObj->addComponent<PhysicsComponent>();
+	physComp->initBox(b2_staticBody, size / physicsScale, pos / physicsScale, 1.0f);
+	physComp->fixture->SetSensor(true);
+
+
+}
+
 void BirdGame::update(float time) {
     if (gameState == GameState::Running){
         updatePhysics();
@@ -181,9 +217,12 @@ void BirdGame::update(float time) {
 void BirdGame::setGameState(GameState newState) {
     this->gameState = newState;
 }
-std::shared_ptr<GameObject> BirdGame::createGameObject() {
+std::shared_ptr<GameObject> BirdGame::createGameObject(string name, Tag tag, vec2 position) {
     auto obj = shared_ptr<GameObject>(new GameObject());
     sceneObjects.push_back(obj);
+	obj->name = name;
+	obj->tag = tag;
+	obj->setPosition(position);
     return obj;
 }
 #pragma endregion
@@ -313,13 +352,7 @@ void BirdGame::render() {
     }
 
     if (gameState == GameState::Ready){
-        auto sprite = spriteAtlas->get("get-ready.png");
-        sprite.setPosition(pos);
-        spriteBatchBuilder.addSprite(sprite);
     } else if (gameState == GameState::GameOver){
-        auto sprite = spriteAtlas->get("game-over.png");
-        sprite.setPosition(pos);
-        spriteBatchBuilder.addSprite(sprite);
     }
 
     auto sb = spriteBatchBuilder.build();

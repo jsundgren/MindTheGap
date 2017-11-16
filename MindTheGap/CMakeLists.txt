@@ -23,6 +23,12 @@ target_link_libraries(MindTheGap ${all_libs})
 # copy files to dest
 file(COPY background.png background2.png bird.json bird.png DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
 file(COPY background.png background2.png bird.json bird.png DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
+# Character SpriteSheet
+file(COPY OPP_Sheet.png OPP_Sheet.json DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
+file(COPY OPP_Sheet.png OPP_Sheet.json DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
+# Map
+file(COPY test_map_squared_spritesheet.png test_map_squared_spritesheet.json test_map_squared.json DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
+file(COPY test_map_squared_spritesheet.png test_map_squared_spritesheet.json test_map_squared.json DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
 
 IF (WIN32)
     # Copy dll files to ${CMAKE_CURRENT_BINARY_DIR}/Debug
