@@ -1,11 +1,12 @@
-//
-// Created by Morten Nobel-Jørgensen on 10/10/2017.
-//
-
-#include "SpriteAnimationComponent.hpp"
-#include "GameObject.hpp"
 #include "sre\SpriteAtlas.hpp"
 #include "sre\Sprite.hpp"
+
+#include "SpriteAnimationComponent.hpp"
+#include "CharacterControllerComponent.hpp"
+#include "GameObject.hpp"
+
+#include <glm/gtx/rotate_vector.hpp> 
+
 #include <iostream>
 #include <memory>
 
@@ -19,7 +20,7 @@ void SpriteAnimationComponent::update(float deltaTime) {
 
 	auto physComp = gameObject->getComponent<PhysicsComponent>();
 	auto spriteComp = gameObject->getComponent<SpriteComponent>();
-	auto contrlComp = gameObject->getComponent<BirdController>();
+	auto contrlComp = gameObject->getComponent<CharacterControllerComponent>();
 
 	assert(physComp != nullptr);
     assert(spriteComp != nullptr);
@@ -29,14 +30,26 @@ void SpriteAnimationComponent::update(float deltaTime) {
 	vector<Sprite> spriteAnim;
 	Sprite final;
 
+	//calc the index by the gametime
 	int index;
 	if (time > animationTime) {
 		time = fmod(time, animationTime);
 		spriteIndex = (spriteIndex + 1) % 1000; //<- hereby setting the maximum Animation lengtht to 1000 frames, i just didn't want the number to get ridiculously high. 
 	}
 
+	//get linear velocity and rotate it so that it faces the same direction as if it was a regular platformer
+	vec2 linearVelocity = physComp->getLinearVelocity();
+
+	float rot = gameObject->getRotation();
+	rot = degrees(rot);
+	if ((rot <= 90.0f + FLT_EPSILON && rot >= 90.0f - FLT_EPSILON) || (rot <= 270.0f + FLT_EPSILON && rot >= 270.0f - FLT_EPSILON)) {
+		rot += 180.f; // Solving a little anomalie here, that caused the sprites to be mirrored on the right and left sides of platforms
+	}
+	linearVelocity = glm::rotate(linearVelocity, radians(rot));
+
+	//Find the ccording animation
 	if (contrlComp->onGround) {
-		float horizVelocity = abs(physComp->getLinearVelocity().x);
+		float horizVelocity = abs(linearVelocity.x);
 
 		if (horizVelocity < FLT_EPSILON) {
 			//Idle
@@ -49,7 +62,7 @@ void SpriteAnimationComponent::update(float deltaTime) {
 			spriteAnim = runSprites;
 		}
 	} else {
-		float vertVelocity = physComp->getLinearVelocity().y;
+		float vertVelocity = linearVelocity.y;
 
 		if (abs(vertVelocity) < FLT_EPSILON) {
 			//MidAir
@@ -63,9 +76,11 @@ void SpriteAnimationComponent::update(float deltaTime) {
 		}
 	}
 
+	//get the sprite to that index
 	final = spriteAnim[spriteIndex % spriteAnim.size()];
 
-	float horizVelocity = physComp->getLinearVelocity().x;
+	//flip, if necessary
+	float horizVelocity = linearVelocity.x;
 	if (horizVelocity < 0) {
 		//Mirror to Left
 		final.setFlip({true, false});
@@ -75,14 +90,6 @@ void SpriteAnimationComponent::update(float deltaTime) {
 	}
 
     spriteComp->setSprite(final);
-}
-int SpriteAnimationComponent::calcAnimatedSpriteIndex(float time, int size) {
-	int res = 0;
-	if (time > animationTime) {
-		time = fmod(time, animationTime);
-		res = (spriteIndex + 1) % size;
-	}
-	return res;
 }
 
 void SpriteAnimationComponent::setPlayerSprites(std::shared_ptr<sre::SpriteAtlas> spriteAtlas) {

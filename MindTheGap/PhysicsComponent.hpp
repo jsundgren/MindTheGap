@@ -10,8 +10,8 @@ class PhysicsComponent : public Component {
 public:
     explicit PhysicsComponent(GameObject *gameObject);
 
-    void initCircle(b2BodyType type, float radius,glm::vec2 center,float density);
-    void initBox(b2BodyType type, glm::vec2 size,glm::vec2 center,float density);
+    virtual void initCircle(b2BodyType type, float radius,glm::vec2 center,float density);
+    virtual void initBox(b2BodyType type, glm::vec2 size,glm::vec2 center,float density);
 
     void addForce(glm::vec2 force);     // Force gradually affects the velocity over time
 
@@ -24,16 +24,18 @@ public:
     bool isSensor();
 
     void setSensor(bool enabled);
-    b2Body * body = nullptr;
-private:
-    b2PolygonShape * polygon = nullptr;
-    b2CircleShape * circle = nullptr;
+    b2Body* body = nullptr;
+	glm::vec2 size = glm::vec2(0);
+protected:
+    b2PolygonShape* polygon = nullptr;
+    b2CircleShape* circle = nullptr;
     b2Shape::Type shapeType;
     b2Fixture* fixture = nullptr;
     b2BodyType rbType;
-    std::vector<PhysicsComponent *> collidingBodies;
-    b2World * world = nullptr;
-    friend class BirdGame;
+    std::vector<PhysicsComponent*> collidingBodies;
+    b2World* world = nullptr;
+    friend class GameManager;
+
 
 
 };

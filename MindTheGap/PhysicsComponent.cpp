@@ -4,12 +4,12 @@
 
 #include <Box2D/Box2D.h>
 #include "PhysicsComponent.hpp"
-#include "BirdGame.hpp"
+#include "GameManager.hpp"
 
 PhysicsComponent::PhysicsComponent(GameObject *gameObject)
         : Component(gameObject)
 {
-    world = BirdGame::instance->world;
+    world = GameManager::instance->world1;
 }
 
 void PhysicsComponent::addImpulse(glm::vec2 force) {
@@ -51,12 +51,13 @@ void PhysicsComponent::initCircle(b2BodyType type, float radius, glm::vec2 cente
     fxD.density = density;
     fixture = body->CreateFixture(&fxD);
 
-    BirdGame::instance->registerPhysicsComponent(this);
+    GameManager::instance->registerPhysicsComponent(this);
 }
 
 void PhysicsComponent::initBox(b2BodyType type, glm::vec2 size, glm::vec2 center, float density) {
     assert(body == nullptr);
     // do init
+	this->size = size;
     shapeType = b2Shape::Type::e_polygon;
     b2BodyDef bd;
     bd.type = type;
@@ -70,7 +71,7 @@ void PhysicsComponent::initBox(b2BodyType type, glm::vec2 size, glm::vec2 center
     fxD.density = density;
     fixture = body->CreateFixture(&fxD);
 
-    BirdGame::instance->registerPhysicsComponent(this);
+    GameManager::instance->registerPhysicsComponent(this);
 }
 
 bool PhysicsComponent::isSensor() {

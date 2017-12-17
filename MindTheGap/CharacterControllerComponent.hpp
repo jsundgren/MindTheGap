@@ -5,9 +5,15 @@
 
 using namespace std;
 
-class BirdController : public Component {
+class GravityComponent;
+
+enum GroundDirection4 {U, L, R, D};
+
+class CharacterControllerComponent : public Component {
 public:
-    explicit BirdController(GameObject *gameObject);
+    explicit CharacterControllerComponent(GameObject *gameObject);
+
+	void update(float deltaTime) override;
 
     bool onKey(SDL_Event &event) override;
 
@@ -15,10 +21,8 @@ public:
 
     void onCollisionEnd(PhysicsComponent *comp) override;
 
-	void update(float deltaTime) override;
-
 	bool onGround = false;
-
+	bool player1 = true;
 private:
 	static float gravityFactor;
 	static float density;
@@ -31,17 +35,22 @@ private:
 	static float jumpTimerWait;
 	static float jumpTimerForce;
 
-	bool left = false;
-	bool right = false;
-	bool space = false;
-
-	shared_ptr<PhysicsComponent> phys;
-	
-	float endTime;
-	float timer = 100000000000000000.0f;
-
-	void movement(float deltaTime);
-	void jump(float deltaTime);
+	void calcMovement(float deltaTime);
+	void calcGravity(float deltaTime);
+	void calcJump(float deltaTime);
 	void setRotation();
 
+	GroundDirection4 groundDirection = GroundDirection4::D;
+	GravityComponent* getNearestGravityComp();
+	shared_ptr<PhysicsComponent> phys;
+
+	bool left = false;
+	bool right = false;
+	bool up = false;
+	bool down = false;
+	bool jump = false;
+	
+	float endTime;
+	float timer = FLT_MAX;
 };
+

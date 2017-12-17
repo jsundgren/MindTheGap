@@ -1,6 +1,6 @@
-#include "BirdGame.hpp"
+#include "GameManager.hpp"
 
 int main(){
-   new BirdGame();
+   new GameManager();
    return 0;
 }

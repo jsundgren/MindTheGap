@@ -1,0 +1,21 @@
+{"frames": [
+
+{
+	"filename": "Map_1.png",
+	"frame": {"x":0,"y":0,"w":960,"h":960},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":960,"h":960},
+	"sourceSize": {"w":960,"h":960},
+	"pivot": {"x":0.5,"y":0.5}
+}],
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "Map_2_SpriteSheet.png",
+	"format": "RGBA8888",
+	"size": {"w":960,"h":960},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:826ba7c9d7e8ad73aa63f434389b1b40:712739ebf16e8e810df99cdffb3302a0:dd1d72cd62af27eb03f1ee3a388dbb7a$"
+}
+}

@@ -1,0 +1,21 @@
+{"frames": [
+
+{
+	"filename": "test_map_squared1_spritesheet.png",
+	"frame": {"x":0,"y":0,"w":480,"h":160},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":480,"h":160},
+	"sourceSize": {"w":480,"h":160},
+	"pivot": {"x":0.5,"y":0.5}
+}],
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "test_map_squared1_spritesheet.png",
+	"format": "RGBA8888",
+	"size": {"w":480,"h":160},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:e16f94ce7c204cc52f9a2a5b120867fe:7fb12a482e8b1d9cea357ba1534b3720:1d6e19ea9dbfb865fe45874ffc2dc434$"
+}
+}

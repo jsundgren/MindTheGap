@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Component.hpp"
 #include "sre/Sprite.hpp"
+
+#include "Component.hpp"
 #include "SpriteComponent.hpp"
 #include "CharacterControllerComponent.hpp"
 #include "PhysicsComponent.hpp"
@@ -19,9 +20,6 @@ public:
     float getAnimationTime() const;
     void setAnimationTime(float animationTime);
 private:
-
-	int calcAnimatedSpriteIndex(float time, int size);
-
 	vector<Sprite> idleSprites;
     vector<Sprite> walkSprites;
 	vector<Sprite> runSprites;
@@ -31,7 +29,7 @@ private:
 	vector<Sprite> jumpLandSprites;
 
     float animationTime = 0.133f;
-	float walkThreshold = 4.5f;
+	float walkThreshold = 3.5f;
     float time = 0;
     int spriteIndex = 0;
 };

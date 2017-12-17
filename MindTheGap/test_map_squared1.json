@@ -1,0 +1,63 @@
+{ "height":5,
+ "infinite":false,
+ "layers":[
+        {
+         "data":[7, 8, 8, 8, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 41, 39, 39, 39, 42, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 41, 39, 39, 39, 42, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 41, 39, 39, 39, 42, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 65, 39, 39, 39, 66, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         "height":5,
+         "name":"Kachelebene 1",
+         "opacity":1,
+         "type":"tilelayer",
+         "visible":true,
+         "width":15,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "data":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 8, 8, 8, 8, 8, 9, 0, 0, 0, 0, 0, 0, 0, 0, 70, 39, 39, 39, 39, 39, 69],
+         "height":5,
+         "name":"Tile Layer 2",
+         "opacity":1,
+         "type":"tilelayer",
+         "visible":true,
+         "width":15,
+         "x":0,
+         "y":0
+        }],
+ "nextobjectid":1,
+ "orientation":"orthogonal",
+ "renderorder":"right-down",
+ "templategroups":[],
+ "tiledversion":"2017.10.31",
+ "tileheight":32,
+ "tilesets":[
+        {
+         "columns":6,
+         "firstgid":1,
+         "image":"Assets\/tile_jungle_ground_grey.png",
+         "imageheight":192,
+         "imagewidth":192,
+         "margin":0,
+         "name":"OPP_Jungle_Ground_Grey",
+         "spacing":0,
+         "tilecount":36,
+         "tileheight":32,
+         "tilewidth":32
+        }, 
+        {
+         "columns":4,
+         "firstgid":37,
+         "image":"Assets\/tile_jungle_wall_grey.png",
+         "imageheight":384,
+         "imagewidth":128,
+         "margin":0,
+         "name":"OPP_Jungle_Wall_Grey",
+         "spacing":0,
+         "tilecount":48,
+         "tileheight":32,
+         "tilewidth":32
+        }],
+ "tilewidth":32,
+ "type":"map",
+ "version":1,
+ "width":15
+}
